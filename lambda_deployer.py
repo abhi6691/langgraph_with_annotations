@@ -79,10 +79,10 @@ def build_and_push_docker_image(image_uri):
         shell=True, check=True
     )
 
-    # Build the Docker image
-    print("Building Docker image...")
+    # Build the Docker image without cache
+    print("Building Docker image with --no-cache...")
     subprocess.run([
-        'docker', 'build', '-t', image_uri, '-f', DOCKERFILE_PATH, '.'
+        'docker', 'build', '--no-cache', '-t', image_uri, '-f', DOCKERFILE_PATH, '.'
     ], check=True)
 
     # Tag and push the Docker image to ECR
@@ -92,6 +92,22 @@ def build_and_push_docker_image(image_uri):
     ], check=True)
 
 def deploy_lambda_container(image_uri):
+    def wait_for_update(function_name):
+        while True:
+            response = lambda_client.get_function(FunctionName=function_name)
+            status = response['Configuration']['State']
+            print(f"Current Lambda function status: {status}")
+
+            # Break the loop if the function is Active
+            if status == "Active":
+                print("Lambda function is active and ready.")
+                break
+            elif status == "Failed":
+                raise Exception("Lambda function update failed.")
+
+            # Wait for a few seconds before polling again
+            time.sleep(5)
+
     try:
         # Deploy the Lambda function with the container image
         response = lambda_client.create_function(
@@ -112,7 +128,10 @@ def deploy_lambda_container(image_uri):
             ImageUri=image_uri,
             Publish=True
         )
-        print("Lambda function updated:", response)
+        print("Lambda function update initiated:", response)
+
+    # Wait for the function to reach the "Active" state
+    wait_for_update(FUNCTION_NAME)
 
 def main():
     # Check that required files exist
