@@ -1,5 +1,3 @@
-# lambda_function.py
-
 import importlib
 import os
 from framework import LambdaHandler
