@@ -1,6 +1,8 @@
 # customer_app.py
 
 from framework import initialize, entrypoint, application
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
 
 @application
 class MyApp:
@@ -17,7 +19,13 @@ class MyApp:
         class QueryNode(Runnable):
             def invoke(self, input, config, **kwargs):
                 query = input.get("query")
-                return {"response": f"Processed query: {query}."}
+                model = ChatOpenAI(model="gpt-3.5-turbo",
+                          api_key="sk-proj-################################################")
+                
+                prompt = f"Answer the following question: {query}"
+
+                response = model.invoke([HumanMessage(content=prompt)]).content
+                return {"response": response}
 
         # Set up the graph
         self.graph = Graph()

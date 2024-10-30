@@ -1,1 +1,5 @@
 langgraph
+langchain-openai
+langchain
+boto3
+pydantic
