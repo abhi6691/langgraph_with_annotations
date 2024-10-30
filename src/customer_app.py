@@ -1,5 +1,5 @@
 from framework import initialize, entrypoint, application
-from app_samples.simple_langgraph_app import SimpleLanggraphApp
+from app_samples.rag_with_vector_store.rag_with_vector_store_app import RagWithVectorStoreApp
 
 @application
 class MyApp:
@@ -8,7 +8,7 @@ class MyApp:
     
     @initialize
     def setup_graph(self):
-        self.graph = SimpleLanggraphApp().create_graph()
+        self.graph = RagWithVectorStoreApp().create_graph()
 
     @entrypoint
     def handle_query(self, event):

@@ -1,3 +1,4 @@
+import os
 from app_samples.base_app import BaseLanggraphApp
 from langgraph.graph import END, Graph
 from langchain_core.runnables import Runnable
@@ -14,7 +15,7 @@ class SimpleLanggraphApp(BaseLanggraphApp):
             def invoke(self, input, config, **kwargs):
                 query = input.get("query")
                 model = ChatOpenAI(model="gpt-3.5-turbo",
-                        api_key="sk-proj-################################################")
+                        api_key=os.getenv("OPENAI_API_KEY"))
                 
                 prompt = f"Answer the following question: {query}"
 
